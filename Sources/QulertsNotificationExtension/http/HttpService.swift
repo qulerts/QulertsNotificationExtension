@@ -18,11 +18,10 @@ class HttpService {
 
     func sendFeedback(payload: String?) {
         if let event = payload {
-            var params = Dictionary<String, String>()
-            params["e"] = event
+            var request =  URLRequest(url: URL(string: "https://f.qulerts.com/p.gif?e=\(event)")!)
+            request.httpMethod = "GET"
             
-            let endpoint = getCollectorUrl(path: "p.gif", params: params)
-            session.doRequest(from: ApiGetJsonRequest(endpoint: endpoint).getUrlRequest()) { httpResult in
+            session.doRequest(from: request) { httpResult in
                 if httpResult.isValidStatus() {
                     QulertsLogger.log(message: "Qulerts collector returned \(httpResult.getStatusCode())")
                 } else {
@@ -40,16 +39,6 @@ class HttpService {
                 completionHandler(nil)
             }
         }
-    }
-
-    private func getCollectorUrl(path: String, params: [String: String]) -> String {
-        var components = URLComponents(string: "https://f.qulerts.com")!
-        components.path = path.starts(with: "/") ? path : "/\(path)"
-        let queryItems = params.map { (paramKey, paramValue) in
-            URLQueryItem(name: paramKey, value: paramValue)
-        }
-        components.queryItems = queryItems
-        return components.url!.absoluteString
     }
 
 }
