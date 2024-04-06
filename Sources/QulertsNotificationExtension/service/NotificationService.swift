@@ -63,7 +63,7 @@ import UserNotifications
                 .addParameter(key: "c", value: customerId!)
                 .addParameter(key: "cd", value: campaignDate!)
                 .toMap()
-        let serializedEvent = entitySerializerService.serializeToJson(event: pushReceivedEvent)
+        let serializedEvent = entitySerializerService.serializeToBase64(event: pushReceivedEvent)
         httpService.sendFeedback(payload: serializedEvent)
     }
     
