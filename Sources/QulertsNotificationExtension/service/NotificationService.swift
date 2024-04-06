@@ -19,37 +19,40 @@ import UserNotifications
         self.entitySerializerService = entitySerializerService
     }
 
-    @objc public func handlePushNotification(request: UNNotificationRequest,
-                                             bestAttemptContent: UNMutableNotificationContent,
+    @objc public func didReceiveNotificationRequest(request: UNNotificationRequest,
+                                             bestAttemptContent: UNMutableNotificationContent?,
                                              withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-
-        let source = request.content.userInfo["source"]
-        if source != nil {
-            let pushChannelId = source as? String
-            if "qulerts" == pushChannelId! {
-                pushMessageDelivered(pushContent: request.content.userInfo)
-                let imageUrl = request.content.userInfo["image_url"] as? String
-                if imageUrl != nil {
-                    httpService.downloadContent(endpoint: imageUrl) { response in
-                        if response != nil {
-                            do {
-                                let imageAttachment = try UNNotificationAttachment(identifier: "picture", url: response!.getPath(), options: nil)
-                                bestAttemptContent.attachments = [imageAttachment]
-                                contentHandler(bestAttemptContent)
-                            } catch {
-                                contentHandler(bestAttemptContent)
-                                QulertsLogger.log(message: "unable to handle push notification image")
+        
+        if let bestAttemptContent = bestAttemptContent {
+            let source = request.content.userInfo["source"]
+            if source != nil {
+                let pushChannelId = source as? String
+                if "qulerts" == pushChannelId! {
+                    pushMessageDelivered(pushContent: request.content.userInfo)
+                    let imageUrl = request.content.userInfo["image_url"] as? String
+                    if imageUrl != nil {
+                        httpService.downloadContent(endpoint: imageUrl) { response in
+                            if response != nil {
+                                do {
+                                    let imageAttachment = try UNNotificationAttachment(identifier: "picture", url: response!.getPath(), options: nil)
+                                    bestAttemptContent.attachments = [imageAttachment]
+                                    contentHandler(bestAttemptContent)
+                                } catch {
+                                    contentHandler(bestAttemptContent)
+                                    QulertsLogger.log(message: "unable to handle push notification image")
+                                }
                             }
                         }
+                    } else {
+                        contentHandler(bestAttemptContent)
                     }
-                } else {
-                    contentHandler(bestAttemptContent)
                 }
             }
         }
+        
     }
     
-    @objc public func pushMessageDelivered(pushContent: Dictionary<AnyHashable, Any>) {
+    private func pushMessageDelivered(pushContent: Dictionary<AnyHashable, Any>) {
         let pushId = getContentItem(key: "pushId", pushContent: pushContent)
         let campaignId = getContentItem(key: "campaignId", pushContent: pushContent)
         let campaignDate = getContentItem(key: "campaignDate", pushContent: pushContent)
