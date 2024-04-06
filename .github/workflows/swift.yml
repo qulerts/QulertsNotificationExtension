@@ -14,10 +14,20 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Swift environment
-      uses: actions/setup-swift@v1
+      uses: actions/setup-swift@v2
       with:
         swift-version: '5.10.0'
     - name: Build
       run: swift build -v
     - name: Run tests
       run: swift test -v
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Create Tag
+      run: |
+        git tag -a 1.0.${{ github.run_number }} -m "Release version 1.0.${{ github.run_number }}"
+        git push origin 1.0.${{ github.run_number }}
