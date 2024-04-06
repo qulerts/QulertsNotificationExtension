@@ -9,7 +9,6 @@ import Foundation
 
 @objc public final class Qulerts : NSObject {
     
-    @available(iOSApplicationExtension,unavailable)
     @objc public class func notification() -> NotificationService {
         return NotificationService(httpService: HttpService(session: URLSession.shared), entitySerializerService: EntitySerializerService(encodingService: EncodingService(), jsonSerializerService: JsonSerializerService()))
     }
