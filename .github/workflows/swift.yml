@@ -21,11 +21,6 @@ jobs:
     - name: Run tests
       run: swift test -v
 
-    - name: Configure Git
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-
     - name: Create Tag
       run: |
         git tag -a 1.0.${{ github.run_number }} -m "Release version 1.0.${{ github.run_number }}"
