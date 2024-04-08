@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "QulertsNotificationExtension",
     platforms: [
-        .iOS(.v12), .watchOS(.v4), .macOS(.v10_14)
+        .iOS(.v10), .watchOS(.v3), .macOS(.v10_14)
     ],
     products: [
         .library(
